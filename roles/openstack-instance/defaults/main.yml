@@ -1,0 +1,2 @@
+hostname: "{{ role_hostname }}"
+keyname: cj222iw-2dv50e

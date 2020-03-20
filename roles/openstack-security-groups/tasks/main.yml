@@ -1,0 +1,61 @@
+- name: Create ssh security group
+  tags: bootstrap
+  os_security_group:
+    name: "SSH"
+    state: present
+  when: state == "present"
+
+- name: Create ssh security group
+  tags: bootstrap
+  os_security_group:
+    name: "HTTP"
+    state: present
+  when: state == "present"
+
+- name: Create TCP security group
+  tags: bootstrap
+  os_security_group:
+    name: "TCP"
+    state: present
+  when: state == "present"
+# Create a security group rule
+
+- name: Allow ssh traffic to nginx machine
+  os_security_group_rule:
+    security_group: "SSH"
+    remote_ip_prefix: 0.0.0.0/0
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+  when: state == "present"
+
+- name: Allow http traffic to nginx machine
+  os_security_group_rule:
+    security_group: "HTTP"
+    remote_ip_prefix: 0.0.0.0/0
+    protocol: tcp
+    port_range_min: 80
+    port_range_max: 80
+  when: state == "present"
+
+- name: Allow TCP traffic
+  os_security_group_rule:
+    security_group: "TCP"
+    remote_ip_prefix: 0.0.0.0/0
+    protocol: tcp
+    port_range_min: 6443
+    port_range_max: 6443
+  when: state == "present"
+
+
+- name: Delete SSH group
+  os_security_group:
+    name: "SSH"
+    state: absent
+  when: state == "absent"
+
+- name: Delete HTTP group
+  os_security_group:
+    name: "SSH"
+    state: absent
+  when: state == "absent"

@@ -1,0 +1,3 @@
+networkname: ansible_demo
+subnetworkname: ansible_demo_subnet
+routername: ansible_router_name

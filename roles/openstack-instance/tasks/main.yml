@@ -1,0 +1,47 @@
+---
+
+- name: Get cloud configuration
+  tags: bootstrap
+  os_client_config:
+
+- name: Create OpenStack instance
+  os_server:
+    security_groups: "SSH,HTTP,TCP"
+    name: "{{ name }}-{{ hostname }}"
+    image: "{{ lookup('env','IMAGE') | default('Ubuntu server 16.04', true) }}"
+    key_name: "{{ keyname }}"
+    auto_ip: yes
+    availability_zone: Education
+    flavor: c2-r2-d40
+    wait: yes
+    nics:
+      - net-name: "ansible_demo"
+  register: "instance"
+
+- name: Delete OpenStack instances
+  os_server:
+    name: "{{ name }}-{{ hostname }}"
+    state: absent
+  when: state == "absent"
+
+- name: Update inventory
+  add_host:
+    name: "{{ hostname }}"
+    ansible_ssh_host: "{{ instance.openstack.accessIPv4 }}"
+    ansible_ssh_user: ubuntu
+    groupname: gr_{{ hostname }}
+    routeruuid: "{{ routeruuid }}"
+    subnetuuid: "{{ subnetuuid }}"
+  when: state == "present"
+
+- name: Wait during instances boot
+  tags: bootstrap
+  wait_for:
+    host: "{{ instance.openstack.accessIPv4 }}"
+    port: 22
+    search_regex: OpenSSH
+  when: state == "present"
+
+- name: Allow SSH keys on first connection
+  shell: "ssh-keyscan {{ instance.openstack.accessIPv4 }} >> ~/.ssh/known_hosts"
+  when: state == "present"

@@ -1,0 +1,30 @@
+---
+- name: Destroy network 
+  hosts: localhost
+  pre_tasks:
+    - name: Set variables
+      set_fact:
+        name: "{{networkname}}"
+        state: absent
+
+  roles:
+    - openstack-instance
+    - openstack-security-groups
+  
+  tasks:
+    - name: delete router
+      os_router:
+        state: absent
+        name: "{{routername}}"
+        interfaces:
+          - "{{subnetworkname}}"
+
+    - name: delete network
+      os_network:
+        state: absent
+        name: "{{networkname}}"
+
+    - name: delete subnet
+      os_subnet:
+        state: absent
+        name: "{{subnetworkname}}"

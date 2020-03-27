@@ -2,8 +2,8 @@
   become: yes
   tasks:
     - name: initialize the cluster
-      # shell: kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
-      shell: kubeadm init --apiserver-cert-extra-sans=194.47.178.229 >> cluster_initialized.txt
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 --apiserver-cert-extra-sans=194.47.178.229 >> cluster_initialized.txt
+      #shell: kubeadm init --apiserver-cert-extra-sans=194.47.178.229 >> cluster_initialized.txt
       args:
         chdir: $HOME
         creates: cluster_initialized.txt
@@ -26,7 +26,9 @@
     - name: install Pod network
       become: yes
       become_user: ubuntu
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml >> pod_network_setup.txt
+      #shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml >> pod_network_setup.txt
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/2140ac876ef134e0ed5af15c65e414cf26827915/Documentation/kube-flannel.yml >> pod_network_setup.txt
+      #shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.txt
       args:
         chdir: $HOME
         creates: pod_network_setup.txt
@@ -35,3 +37,13 @@
       become: yes
       become_user: ubuntu
       shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc6/aio/deploy/recommended.yaml
+
+    - name: Create service account
+      become: yes
+      become_user: ubuntu
+      shell: kubectl apply -f dashboard-adminuser.yaml
+
+    - name: ClusterRoleBinding
+      become: yes
+      become_user: ubuntu
+      shell: kubectl apply -f ClusterRoleBinding.yaml

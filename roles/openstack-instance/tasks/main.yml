@@ -6,7 +6,7 @@
 
 - name: Create OpenStack instance
   os_server:
-    security_groups: "SSH,HTTP,TCP"
+    security_groups: "SSH,HTTP,TCP,UDP"
     name: "{{ name }}-{{ hostname }}"
     image: "{{ lookup('env','IMAGE') | default('Ubuntu server 16.04', true) }}"
     key_name: "{{ keyname }}"

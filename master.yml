@@ -37,13 +37,37 @@
       become: yes
       become_user: ubuntu
       shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-rc6/aio/deploy/recommended.yaml
-
+    
+    - name: Copy file serivce account
+      become: yes
+      become_user: ubuntu
+      copy:
+        src: dashboard-adminuser.yaml
+        dest: dashboard-adminuser.yaml
+    
     - name: Create service account
       become: yes
       become_user: ubuntu
       shell: kubectl apply -f dashboard-adminuser.yaml
 
+    - name: Copy file ClusterRoleBinding
+      become: yes
+      become_user: ubuntu
+      copy:
+        src: clusterRoleBinding.yaml
+        dest: clusterRoleBinding.yaml
+
     - name: ClusterRoleBinding
       become: yes
       become_user: ubuntu
-      shell: kubectl apply -f ClusterRoleBinding.yaml
+      shell: kubectl apply -f clusterRoleBinding.yaml
+
+    - name: fetch admin.conf
+      become: yes
+      become_user: root
+      become_method: sudo
+      fetch: 
+        remote_src: yes
+        src: /etc/kubernetes/admin.conf
+        dest: test/
+        flat: yes
